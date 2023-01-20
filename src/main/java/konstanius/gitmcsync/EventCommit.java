@@ -58,9 +58,7 @@ public class EventCommit {
         tc2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getString("commit-changes-hover").replace("%link%", current))));
         if (Objects.requireNonNull(config.getList("op-pushers")).contains(pusher) && auto) {
             String finalCommand = command;
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
-            });
+            Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), finalCommand));
         } else {
             auto = false;
         }

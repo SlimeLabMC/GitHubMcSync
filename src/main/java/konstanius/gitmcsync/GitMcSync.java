@@ -11,13 +11,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,12 +56,12 @@ public final class GitMcSync extends JavaPlugin {
         } catch (Exception ignored) {
         }
 
-        getCommand("gitmerge").setExecutor(new CommandGitMerge(this));
-        getCommand("gitpull").setExecutor(new CommandGitPull(this));
-        getCommand("gitupgrade").setExecutor(new CommandGitUpgrade(this));
-        getCommand("gitmute").setExecutor(new CommandGitMute(this));
-        getCommand("gitexport").setExecutor(new CommandGitExport(this));
-        getCommand("gitclean").setExecutor(new CommandGitClean(this));
+        Objects.requireNonNull(getCommand("gitmerge")).setExecutor(new CommandGitMerge(this));
+        Objects.requireNonNull(getCommand("gitpull")).setExecutor(new CommandGitPull());
+        Objects.requireNonNull(getCommand("gitupgrade")).setExecutor(new CommandGitUpgrade(this));
+        Objects.requireNonNull(getCommand("gitmute")).setExecutor(new CommandGitMute());
+        Objects.requireNonNull(getCommand("gitexport")).setExecutor(new CommandGitExport(this));
+        Objects.requireNonNull(getCommand("gitclean")).setExecutor(new CommandGitClean(this));
 
         try {
             webServer = HttpServer.create(new InetSocketAddress(Integer.parseInt(getString("webhook-port"))), 0);

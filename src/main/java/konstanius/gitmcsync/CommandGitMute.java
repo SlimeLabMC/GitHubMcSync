@@ -4,20 +4,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 
 import static konstanius.gitmcsync.GitMcSync.*;
-import static konstanius.gitmcsync.GitMcSync.log;
-import static org.bukkit.Bukkit.getServer;
 
 public class CommandGitMute implements CommandExecutor {
-    private final Plugin plugin;
 
-    public CommandGitMute(GitMcSync gitMcSync) {
-        plugin = gitMcSync;
+    public CommandGitMute() {
     }
 
     @Override

@@ -9,10 +9,8 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 
 import static konstanius.gitmcsync.GitMcSync.*;
-import static org.bukkit.Bukkit.getServer;
 
 public class CommandGitClean implements CommandExecutor {
     private final Plugin plugin;

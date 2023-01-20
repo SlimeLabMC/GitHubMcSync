@@ -9,13 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import static konstanius.gitmcsync.ActionMerge.mergeFiles;
 import static konstanius.gitmcsync.CommandGitMerge.fetchFiles;
 import static konstanius.gitmcsync.GitMcSync.*;
-import static org.bukkit.Bukkit.getServer;
 
 public class CommandGitUpgrade implements CommandExecutor {
     private final Plugin plugin;

@@ -14,7 +14,6 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -22,7 +21,6 @@ import java.util.Arrays;
 import static konstanius.gitmcsync.ActionMerge.mergeFiles;
 import static konstanius.gitmcsync.ActionMerge.mergeReloads;
 import static konstanius.gitmcsync.GitMcSync.*;
-import static org.bukkit.Bukkit.getServer;
 
 public class CommandGitMerge implements CommandExecutor {
     private final Plugin plugin;

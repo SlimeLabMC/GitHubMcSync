@@ -24,7 +24,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 
 import static konstanius.gitmcsync.GitMcSync.*;
-import static org.bukkit.Bukkit.getServer;
 
 public class CommandGitExport implements CommandExecutor {
     private final Plugin plugin;

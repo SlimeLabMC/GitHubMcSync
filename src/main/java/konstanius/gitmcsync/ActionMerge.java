@@ -1,9 +1,5 @@
 package konstanius.gitmcsync;
 
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.eclipse.jgit.util.FileUtils;
@@ -13,12 +9,9 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import static konstanius.gitmcsync.GitMcSync.*;
-import static org.bukkit.Bukkit.getServer;
 
 public class ActionMerge {
     public static void mergeReloads(Plugin plugin, CommandSender sender) {

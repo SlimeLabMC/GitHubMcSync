@@ -3,23 +3,17 @@ package konstanius.gitmcsync;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import static konstanius.gitmcsync.EventCommit.eventCommit;
 import static konstanius.gitmcsync.GitMcSync.*;
-import static konstanius.gitmcsync.GitMcSync.log;
-import static org.bukkit.Bukkit.getServer;
 
 public class CommandGitPull implements CommandExecutor {
-    private final Plugin plugin;
 
-    public CommandGitPull(GitMcSync gitMcSync) {
-        plugin = gitMcSync;
+    public CommandGitPull() {
     }
 
     @Override
