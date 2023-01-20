@@ -35,15 +35,6 @@ public class CommandGitExport implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        try {
-            if(!verifyLicense()) {
-                log("Plugin license is invalid. Please contact Konstanius#3698 / eukonstanius@gmail.com to purchase a license.");
-                getServer().getPluginManager().disablePlugin(plugin);
-            }
-        } catch (IOException e) {
-            log("Plugin license is invalid. Please contact Konstanius#3698 / eukonstanius@gmail.com to purchase a license.");
-            getServer().getPluginManager().disablePlugin(plugin);
-        }
 
         if (!sender.hasPermission("gitsync.export")) {
             sender.sendMessage(getString("no-permission"));
@@ -130,10 +121,6 @@ public class CommandGitExport implements CommandExecutor {
                 busy = false;
                 if (sender instanceof Player) {
                     try {
-                        ((Player) sender).playSound(((Player) sender).getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                        Thread.sleep(500);
-                        ((Player) sender).playSound(((Player) sender).getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                        Thread.sleep(500);
                         ((Player) sender).playSound(((Player) sender).getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                     } catch (Exception ignored) {
                     }

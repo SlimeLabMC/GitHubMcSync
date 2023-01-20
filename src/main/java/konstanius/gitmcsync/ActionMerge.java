@@ -27,32 +27,6 @@ public class ActionMerge {
         ready = false;
         busy = false;
         sender.sendMessage(getString("successful-commit"));
-
-        Plugin[] plugins = plugin.getServer().getPluginManager().getPlugins();
-        Arrays.sort(plugins, Comparator.comparing(Plugin::getName));
-        for (int i = 0; i < plugins.length; i += 3) {
-            Plugin p1 = plugins[i];
-            TextComponent tc1 = new TextComponent(getString("reload-format").replace("%plugin%", p1.getName()));
-            tc1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/BileTools:bile reload " + p1.getName()));
-            tc1.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getString("reload-hover").replace("%plugin%", p1.getName()))));
-            TextComponent tc2;
-            if (plugins.length > i + 1) {
-                Plugin p2 = plugins[i + 1];
-                tc2 = new TextComponent(getString("reload-format").replace("%plugin%", p2.getName()));
-                tc2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/BileTools:bile reload " + p2.getName()));
-                tc2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getString("reload-hover").replace("%plugin%", p2.getName()))));
-                tc1.addExtra(tc2);
-            }
-            TextComponent tc3;
-            if (plugins.length > i + 2) {
-                Plugin p3 = plugins[i + 2];
-                tc3 = new TextComponent(getString("reload-format").replace("%plugin%", p3.getName()));
-                tc3.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/BileTools:bile reload " + p3.getName()));
-                tc3.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getString("reload-hover").replace("%plugin%", p3.getName()))));
-                tc1.addExtra(tc3);
-            }
-            sender.spigot().sendMessage(tc1);
-        }
     }
 
     public static void mergeFiles(Path src) {
@@ -66,7 +40,7 @@ public class ActionMerge {
 
         List<Path> pathsNew = new ArrayList<>();
         try {
-            Files.walkFileTree(src, new FileVisitor<Path>() {
+            Files.walkFileTree(src, new FileVisitor<>() {
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                     return FileVisitResult.CONTINUE;
                 }
@@ -131,7 +105,7 @@ public class ActionMerge {
         List<String> pathsOld = new ArrayList<>();
         src = Path.of(plugin.getDataFolder().getAbsolutePath().replace("/.", "") + "/RepoOld");
         try {
-            Files.walkFileTree(src, new FileVisitor<Path>() {
+            Files.walkFileTree(src, new FileVisitor<>() {
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                     return FileVisitResult.CONTINUE;
                 }

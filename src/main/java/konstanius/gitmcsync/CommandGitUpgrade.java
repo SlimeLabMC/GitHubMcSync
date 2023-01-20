@@ -26,15 +26,6 @@ public class CommandGitUpgrade implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        try {
-            if(!verifyLicense()) {
-                log("Plugin license is invalid. Please contact Konstanius#3698 / eukonstanius@gmail.com to purchase a license.");
-                getServer().getPluginManager().disablePlugin(plugin);
-            }
-        } catch (IOException e) {
-            log("Plugin license is invalid. Please contact Konstanius#3698 / eukonstanius@gmail.com to purchase a license.");
-            getServer().getPluginManager().disablePlugin(plugin);
-        }
 
         if (!sender.hasPermission("gitsync.merge")) {
             sender.sendMessage(getString("permission-denied"));
@@ -68,9 +59,7 @@ public class CommandGitUpgrade implements CommandExecutor {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (args.length > 1) {
                     if (args[1].matches("-r")) {
-                        plugin.getServer().dispatchCommand(sender, "restart");
-                    } else if (args[1].matches("-b")) {
-                        plugin.getServer().dispatchCommand(sender, "biletools:bile reload " + finalPl.getName());
+                        plugin.getServer().dispatchCommand(sender, "cmi schedule restart");
                     }
                     log("False");
                 } else {
@@ -80,10 +69,6 @@ public class CommandGitUpgrade implements CommandExecutor {
                 busy = false;
                 if (sender instanceof Player) {
                     try {
-                        ((Player) sender).playSound(((Player) sender).getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                        Thread.sleep(300);
-                        ((Player) sender).playSound(((Player) sender).getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
-                        Thread.sleep(300);
                         ((Player) sender).playSound(((Player) sender).getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 2f);
                     } catch (Exception ignored) {
                     }

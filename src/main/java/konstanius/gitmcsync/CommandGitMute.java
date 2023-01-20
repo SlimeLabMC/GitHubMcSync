@@ -22,15 +22,6 @@ public class CommandGitMute implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        try {
-            if(!verifyLicense()) {
-                log("Plugin license is invalid. Please contact Konstanius#3698 / eukonstanius@gmail.com to purchase a license.");
-                getServer().getPluginManager().disablePlugin(plugin);
-            }
-        } catch (IOException e) {
-            log("Plugin license is invalid. Please contact Konstanius#3698 / eukonstanius@gmail.com to purchase a license.");
-            getServer().getPluginManager().disablePlugin(plugin);
-        }
 
         if (!sender.hasPermission("gitsync.mute")) {
             sender.sendMessage(getString("no-permission"));
