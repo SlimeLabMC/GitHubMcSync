@@ -1,7 +1,6 @@
 package konstanius.gitmcsync;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 import org.eclipse.jgit.util.FileUtils;
 
 import java.io.File;
@@ -17,9 +16,8 @@ import java.util.List;
 import static konstanius.gitmcsync.GitMcSync.*;
 
 public class ActionMerge {
-    public static void mergeReloads(Plugin plugin, CommandSender sender) {
-        Path src = Path.of(plugin.getDataFolder().getAbsolutePath() + "/RepoClone");
-        mergeFiles(src);
+    public static void mergeReloads(CommandSender sender) {
+        mergeFiles("");
         ready = false;
         busy = false;
         sender.sendMessage(getString("successful-commit"));
@@ -31,7 +29,7 @@ public class ActionMerge {
         return new BigInteger(1, hash).toString(16);
     }
 
-    public static void mergeFiles(Path src) {
+    public static void mergeFiles(String path) {
         boolean whitelistFiletypes = Boolean.parseBoolean(getString("whitelist-filetypes"));
         boolean jars = Boolean.parseBoolean(getString("compare-jar"));
         boolean others = Boolean.parseBoolean(getString("compare-other"));
@@ -41,6 +39,8 @@ public class ActionMerge {
         List<String> pathsDeleted = new ArrayList<>();
 
         List<Path> pathsNew = new ArrayList<>();
+
+        Path src = Path.of(plugin.getDataFolder().getAbsolutePath() + "/RepoClone" + path);
         try {
             Files.walkFileTree(src, new FileVisitor<>() {
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
@@ -102,7 +102,7 @@ public class ActionMerge {
         }
 
         List<String> pathsOld = new ArrayList<>();
-        src = Path.of(plugin.getDataFolder().getAbsolutePath().replace("/.", "") + "/RepoOld");
+        src = Path.of(plugin.getDataFolder().getAbsolutePath() + "/RepoOld" + path);
         try {
             Files.walkFileTree(src, new FileVisitor<>() {
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {

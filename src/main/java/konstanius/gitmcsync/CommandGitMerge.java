@@ -63,16 +63,15 @@ public class CommandGitMerge implements CommandExecutor {
                 old = current;
             }
             if (args.length > 1 && ((Arrays.asList(args).contains("-r")) || Arrays.asList(args).contains("-s"))) {
-                Path src = Path.of(plugin.getDataFolder().getAbsolutePath() + "/RepoClone");
-                mergeFiles(src);
+                mergeFiles("");
                 ready = false;
                 sender.sendMessage(getString("successful-commit"));
                 busy = false;
             } else {
-                mergeReloads(plugin, sender);
+                mergeReloads(sender);
             }
             if (args.length > 1 && Arrays.asList(args).contains("-r")) {
-                Bukkit.getScheduler().runTask(plugin, () -> plugin.getServer().dispatchCommand(sender, "restart"));
+                Bukkit.getScheduler().runTask(plugin, () -> plugin.getServer().dispatchCommand(sender, "cmi schedule restart"));
             }
             if (sender instanceof Player) {
                 try {

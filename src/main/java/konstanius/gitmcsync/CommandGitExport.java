@@ -16,10 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 
@@ -43,8 +40,9 @@ public class CommandGitExport implements CommandExecutor {
             sender.sendMessage(getString("missing-argument"));
             return true;
         }
-        String path = plugin.getServer().getWorldContainer().getAbsolutePath().replace("/.", "") + args[0];
-        if (!(new File(path)).exists()) {
+        String path = plugin.getServer().getWorldContainer().getAbsolutePath() + args[0];
+        File original = new File(path);
+        if (!original.exists()) {
             sender.sendMessage(getString("invalid-directory"));
             return true;
         }
@@ -66,47 +64,64 @@ public class CommandGitExport implements CommandExecutor {
                 }
                 File file = new File(plugin.getDataFolder().getAbsolutePath().replace("/.", "") + "/RepoTemp");
                 Git git = Git.cloneRepository()
-                        .setURI(getString("repository-url").replace("https://", "https://" + getString("token") + "@"))
+                        .setURI(getString("repository-url").replace("https://", "https://oauth2:" + getString("token") + "@"))
                         .setCredentialsProvider(new UsernamePasswordCredentialsProvider(getString("token"), ""))
                         .setDirectory(file)
                         .call();
                 Repository repository = git.getRepository();
                 Path newPath = Path.of(plugin.getServer().getWorldContainer().getAbsolutePath().replace("/.", "/plugins/GitMcSync/RepoTemp" + args[0]));
-                try {
-                    Files.createDirectories(newPath);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                FileUtils.copyDirectory(new File(path), new File(newPath.toString()));
-                if (Boolean.parseBoolean(getString("whitelist-filetypes"))) {
+
+                if(original.isDirectory()){
                     try {
-                        Files.walkFileTree(newPath, new FileVisitor<>() {
-                            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                                return FileVisitResult.CONTINUE;
-                            }
-
-                            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                                for (String type : Objects.requireNonNull(config.getStringList("filetypes"))) {
-                                    if (file.toAbsolutePath().toString().contains(type)) {
-                                        return FileVisitResult.CONTINUE;
-                                    }
-                                }
-                                (new File(file.toAbsolutePath().toString())).delete();
-                                return FileVisitResult.CONTINUE;
-                            }
-
-                            public FileVisitResult visitFileFailed(Path file, IOException exc) {
-                                return FileVisitResult.CONTINUE;
-                            }
-
-                            public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
-                                return FileVisitResult.CONTINUE;
-                            }
-                        });
-                    } catch (IOException e) {
+                        Files.createDirectories(newPath);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    FileUtils.copyDirectory(new File(path), new File(newPath.toString()));
+                    if (Boolean.parseBoolean(getString("whitelist-filetypes"))) {
+                        try {
+                            Files.walkFileTree(newPath, new FileVisitor<>() {
+                                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                                    return FileVisitResult.CONTINUE;
+                                }
+
+                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                                    for (String type : Objects.requireNonNull(config.getStringList("filetypes"))) {
+                                        if (file.toAbsolutePath().toString().contains(type)) {
+                                            return FileVisitResult.CONTINUE;
+                                        }
+                                    }
+                                    (new File(file.toAbsolutePath().toString())).delete();
+                                    return FileVisitResult.CONTINUE;
+                                }
+
+                                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                                    return FileVisitResult.CONTINUE;
+                                }
+
+                                public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                                    return FileVisitResult.CONTINUE;
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }else if(original.isFile()){
+                    Files.copy(Path.of(path), newPath, StandardCopyOption.REPLACE_EXISTING);
+                    if (Boolean.parseBoolean(getString("whitelist-filetypes"))) {
+                        boolean delete = true;
+                        for (String type : Objects.requireNonNull(config.getStringList("filetypes"))) {
+                            if (newPath.toString().contains(type)) {
+                                delete = false;
+                                break;
+                            }
+                        }
+                        if(delete) (new File(newPath.toString())).delete();
+                    }
                 }
+
                 try {
                     FileUtils.deleteDirectory(new File(newPath + "/plugins/GitMcSync"));
                 } catch (Exception ignored) {

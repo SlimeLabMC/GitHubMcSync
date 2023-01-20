@@ -9,8 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Path;
-
 import static konstanius.gitmcsync.ActionMerge.mergeFiles;
 import static konstanius.gitmcsync.CommandGitMerge.fetchFiles;
 import static konstanius.gitmcsync.GitMcSync.*;
@@ -40,8 +38,7 @@ public class CommandGitUpgrade implements CommandExecutor {
         busy = true;
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             fetchFiles(plugin);
-            Path src = Path.of(plugin.getDataFolder().getAbsolutePath() + "/RepoClone/plugins/" + args[0]);
-            mergeFiles(src);
+            mergeFiles(args[0]);
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (args.length > 1) {
                     if (args[1].matches("-r")) {
