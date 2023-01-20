@@ -37,31 +37,16 @@ public class CommandGitUpgrade implements CommandExecutor {
             sender.sendMessage(getString("missing-argument"));
             return true;
         }
-        Plugin pl = null;
-        for (Plugin p : plugin.getServer().getPluginManager().getPlugins()) {
-            if (args[0].toLowerCase().matches(p.getName().toLowerCase())) {
-                pl = p;
-                break;
-            }
-        }
-        if (pl == null) {
-            sender.sendMessage(getString("invalid-plugin"));
-            return true;
-        }
         busy = true;
-        Plugin finalPl = pl;
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             fetchFiles(plugin);
-            Path src = Path.of(plugin.getDataFolder().getAbsolutePath() + "/RepoClone/plugins/" + finalPl.getName());
+            Path src = Path.of(plugin.getDataFolder().getAbsolutePath() + "/RepoClone/plugins/" + args[0]);
             mergeFiles(src);
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (args.length > 1) {
                     if (args[1].matches("-r")) {
                         plugin.getServer().dispatchCommand(sender, "cmi schedule restart");
                     }
-                    log("False");
-                } else {
-                    plugin.getServer().dispatchCommand(sender, finalPl.getName() + " reload");
                 }
                 sender.sendMessage(getString("successful-plugin"));
                 busy = false;

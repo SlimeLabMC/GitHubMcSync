@@ -71,16 +71,16 @@ public class CommandGitExport implements CommandExecutor {
                         .setDirectory(file)
                         .call();
                 Repository repository = git.getRepository();
-                String newPath = plugin.getServer().getWorldContainer().getAbsolutePath().replace("/.", "/plugins/GitMcSync/RepoTemp" + args[0]);
+                Path newPath = Path.of(plugin.getServer().getWorldContainer().getAbsolutePath().replace("/.", "/plugins/GitMcSync/RepoTemp" + args[0]));
                 try {
-                    Files.createDirectories(Path.of(newPath));
+                    Files.createDirectories(newPath);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                FileUtils.copyDirectory(new File(path), new File(newPath));
+                FileUtils.copyDirectory(new File(path), new File(newPath.toString()));
                 if (Boolean.parseBoolean(getString("whitelist-filetypes"))) {
                     try {
-                        Files.walkFileTree(Path.of(newPath), new FileVisitor<Path>() {
+                        Files.walkFileTree(newPath, new FileVisitor<>() {
                             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                                 return FileVisitResult.CONTINUE;
                             }

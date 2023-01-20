@@ -109,7 +109,7 @@ public class CommandGitMerge implements CommandExecutor {
 
         try {
             CloneCommand cloneCommand = Git.cloneRepository();
-            cloneCommand.setURI(getString("repository-url").replace("https://", "https://" + getString("token") + "@"));
+            cloneCommand.setURI(getString("repository-url").replace("https://", "https://oauth2:" + getString("token") + "@"));
             if (Boolean.parseBoolean(getString("authenticate"))) {
                 cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(getString("token"), ""));
             }

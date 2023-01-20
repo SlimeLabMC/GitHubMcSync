@@ -6,8 +6,11 @@ import org.eclipse.jgit.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,12 @@ public class ActionMerge {
         ready = false;
         busy = false;
         sender.sendMessage(getString("successful-commit"));
+    }
+
+    public static String getMD5(Path path) throws IOException, NoSuchAlgorithmException {
+        byte[] data = Files.readAllBytes(path);
+        byte[] hash = MessageDigest.getInstance("MD5").digest(data);
+        return new BigInteger(1, hash).toString(16);
     }
 
     public static void mergeFiles(Path src) {
@@ -82,15 +91,12 @@ public class ActionMerge {
                     pathsCreated.add(p.toString());
                     continue;
                 }
-                if (newPath.endsWith(".jar") && jars && Files.size(newPath) == Files.size(p)) {
-                    continue;
-                }
-                if (others && Files.size(newPath) == Files.size(p)) {
+                if (((newPath.endsWith(".jar") && jars) || others) && getMD5(newPath).equals(getMD5(p))) {
                     continue;
                 }
                 pathsModified.add(p.toString());
                 Files.copy(p, newPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
+            } catch (IOException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
         }
@@ -131,18 +137,18 @@ public class ActionMerge {
             e.printStackTrace();
         }
 
-        if (Boolean.parseBoolean(getString("log-changes"))) {
-            for (String s : pathsOld) {
-                if (!pathsNewer.contains(s.replace("/plugins/GitMcSync/RepoOld", "/plugins/GitMcSync/RepoClone"))) {
-                    pathsDeleted.add(s.replace("/plugins/GitMcSync/RepoOld", ""));
-                    try {
-                        FileUtils.delete(new File(s.replace("/plugins/GitMcSync/RepoOld", "")));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        for (String s : pathsOld) {
+            if (!pathsNewer.contains(s.replace("/plugins/GitMcSync/RepoOld", "/plugins/GitMcSync/RepoClone"))) {
+                pathsDeleted.add(s.replace("/plugins/GitMcSync/RepoOld", ""));
+                try {
+                    FileUtils.delete(new File(s.replace("/plugins/GitMcSync/RepoOld", "")));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
+        }
 
+        if (Boolean.parseBoolean(getString("log-changes"))) {
             for (String s : pathsCreated) {
                 log(s.replace("/plugins/GitMcSync/RepoClone", "") + " has been created");
             }
