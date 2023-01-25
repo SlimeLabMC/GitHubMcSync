@@ -1,30 +1,20 @@
 package konstanius.gitmcsync;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.json.JSONObject;
 
-import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static konstanius.gitmcsync.EventCommit.eventCommit;
-
 public final class GitMcSync extends JavaPlugin {
     public static FileConfiguration config;
     public static Logger logger = Bukkit.getLogger();
-    public static HttpServer webServer;
     public static String current = " ";
     public static String old = " ";
     public static boolean ready = false;
@@ -38,7 +28,7 @@ public final class GitMcSync extends JavaPlugin {
         config = getConfig();
         plugin = this;
 
-        try {
+       /* try {
             URL whatismyip = new URL("http://checkip.amazonaws.com");
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     whatismyip.openStream()));
@@ -46,7 +36,7 @@ public final class GitMcSync extends JavaPlugin {
             log("GitMcSync started listening on: http://" + ip + ":" + getString("webhook-port") + "/webhook");
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         try {
             Files.createDirectory(Path.of(this.getDataFolder() + "/RepoOld"));
         } catch (Exception ignored) {
@@ -63,22 +53,20 @@ public final class GitMcSync extends JavaPlugin {
         Objects.requireNonNull(getCommand("gitexport")).setExecutor(new CommandGitExport(this));
         Objects.requireNonNull(getCommand("gitclean")).setExecutor(new CommandGitClean(this));
 
-        try {
+        /*try {
             webServer = HttpServer.create(new InetSocketAddress(Integer.parseInt(getString("webhook-port"))), 0);
         } catch (IOException e) {
             e.printStackTrace();
         }
         webServer.createContext("/webhook", new MyHandler());
         webServer.setExecutor(null);
-        webServer.start();
+        webServer.start();*/
     }
 
     @Override
-    public void onDisable() {
-        webServer.stop(0);
-    }
+    public void onDisable() {}
 
-    static class MyHandler implements HttpHandler {
+    /*static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
             StringBuilder sb = new StringBuilder();
@@ -96,7 +84,7 @@ public final class GitMcSync extends JavaPlugin {
             JSONObject json = new JSONObject(sb.toString());
             eventCommit(json);
         }
-    }
+    }*/
 
     public static String getString(String ln) {
         return Objects.requireNonNull(config.getString(ln)).replace("&", "§");

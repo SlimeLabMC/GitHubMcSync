@@ -56,7 +56,7 @@ public class ActionMerge {
                                 break outerLoop;
                             }
                         }
-                        (new File(String.valueOf(file))).delete();
+                        //(new File(String.valueOf(file))).delete();
                     } else {
                         pathsNew.add(file);
                     }
@@ -87,15 +87,15 @@ public class ActionMerge {
                 pathsNewer.add(p.toString());
                 File f = new File(newPath.toFile().getAbsolutePath());
                 if (!f.exists()) {
-                    Files.copy(p, newPath, StandardCopyOption.REPLACE_EXISTING);
-                    pathsCreated.add(p.toString());
+                    //Files.copy(p, newPath, StandardCopyOption.REPLACE_EXISTING);
+                    if(checkThenCopy(p, newPath)) pathsCreated.add(p.toString());
                     continue;
                 }
                 if (((newPath.endsWith(".jar") && jars) || others) && getMD5(newPath).equals(getMD5(p))) {
                     continue;
                 }
-                pathsModified.add(p.toString());
-                Files.copy(p, newPath, StandardCopyOption.REPLACE_EXISTING);
+                //Files.copy(p, newPath, StandardCopyOption.REPLACE_EXISTING);
+                if(checkThenCopy(p, newPath)) pathsModified.add(p.toString());
             } catch (IOException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
@@ -118,7 +118,7 @@ public class ActionMerge {
                                 break outerLoop;
                             }
                         }
-                        (new File(String.valueOf(file))).delete();
+                        //(new File(String.valueOf(file))).delete();
                     } else {
                         pathsOld.add(file.toAbsolutePath().toString());
                     }
@@ -159,5 +159,13 @@ public class ActionMerge {
                 log(s.replace("/plugins/GitMcSync/RepoOld", "") + " has been deleted");
             }
         }
+    }
+
+    public static boolean checkThenCopy(Path origin, Path target) throws IOException, NoSuchAlgorithmException {
+        File originFile = new File(origin.toFile().getAbsolutePath());
+        File targetFile = new File(target.toFile().getAbsolutePath());
+        if(originFile.isFile() && targetFile.isFile() && getMD5(origin).equals(getMD5(target))) return false;
+        Files.copy(origin, target, StandardCopyOption.REPLACE_EXISTING);
+        return true;
     }
 }

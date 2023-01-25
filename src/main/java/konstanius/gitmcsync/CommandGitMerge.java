@@ -8,8 +8,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.eclipse.jgit.api.CloneCommand;
-import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,6 +85,16 @@ public class CommandGitMerge implements CommandExecutor {
         return true;
     }
 
+    public static void cloneRepo(Plugin plugin) throws GitAPIException {
+        CloneCommand cloneCommand = Git.cloneRepository();
+        cloneCommand.setURI(getString("repository-url").replace("https://", "https://oauth2:" + getString("token") + "@"));
+        if (Boolean.parseBoolean(getString("authenticate"))) {
+            cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(getString("token"), ""));
+        }
+        cloneCommand.setDirectory(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone"));
+        cloneCommand.call();
+    }
+
     public static void fetchFiles(Plugin plugin) {
         try {
             FileUtils.deleteDirectory(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoOld"));
@@ -95,27 +106,44 @@ public class CommandGitMerge implements CommandExecutor {
         } catch (Exception ignored) {
         }
 
-        try {
-            FileUtils.deleteDirectory(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            Files.createDirectory(Path.of(plugin.getDataFolder() + "/RepoClone"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone/.git").exists()){
+            try {
+                InitCommand initCommand = Git.init();
+                initCommand.setDirectory(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone"));
+                Git git = initCommand.call();
+                git.checkout().setCreateBranch(false).setName("master").call();
+                ObjectId objectId = git.getRepository().resolve("refs/remotes/origin/master");
+                MergeCommand mergeCommand = git.merge().setMessage("Merge to master.").include(objectId).setCommit(true);
+                MergeResult result = mergeCommand.call();
+                MergeResult.MergeStatus status = result.getMergeStatus();
 
-        try {
-            CloneCommand cloneCommand = Git.cloneRepository();
-            cloneCommand.setURI(getString("repository-url").replace("https://", "https://oauth2:" + getString("token") + "@"));
-            if (Boolean.parseBoolean(getString("authenticate"))) {
-                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(getString("token"), ""));
+                if (!status.equals(MergeResult.MergeStatus.MERGED) && !status.equals(MergeResult.MergeStatus.ALREADY_UP_TO_DATE)){
+                    try {
+                        FileUtils.deleteDirectory(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    cloneRepo(plugin);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            cloneCommand.setDirectory(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone"));
-            cloneCommand.call();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            try {
+                FileUtils.deleteDirectory(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                Files.createDirectory(Path.of(plugin.getDataFolder() + "/RepoClone"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                cloneRepo(plugin);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         try {
@@ -123,7 +151,7 @@ public class CommandGitMerge implements CommandExecutor {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try {
+        /*try {
             FileUtils.deleteDirectory(new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone/.git"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,6 +170,6 @@ public class CommandGitMerge implements CommandExecutor {
             (new File(plugin.getDataFolder().getAbsolutePath() + "/RepoClone/README.md")).delete();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
