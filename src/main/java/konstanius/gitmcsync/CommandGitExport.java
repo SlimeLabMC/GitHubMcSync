@@ -109,6 +109,7 @@ public class CommandGitExport implements CommandExecutor {
                     }
 
                 }else if(original.isFile()){
+                    Files.createDirectories(newPath.getParent());
                     Files.copy(Path.of(path), newPath, StandardCopyOption.REPLACE_EXISTING);
                     if (Boolean.parseBoolean(getString("whitelist-filetypes"))) {
                         boolean delete = true;
